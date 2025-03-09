@@ -47,11 +47,11 @@ ExternalProject_Add(
         -DENABLE_CPPPARSER=OFF
         -DENABLE_TESTS=OFF
         -DENABLE_SAMPLES=OFF
-	LOG_CONFIGURE OFF  # Disable configure logs
-    LOG_BUILD OFF      # Disable build logs
-    LOG_INSTALL OFF    # Disable install logs
-    LOG_OUTPUT_ON_FAILURE OFF  # Show output only if the build fails
-	COMMAND_ECHO STDOUT > ${CMAKE_BINARY_DIR}/poco_build_log.txt
+	# LOG_CONFIGURE OFF  # Disable configure logs
+    # LOG_BUILD OFF      # Disable build logs
+    # LOG_INSTALL OFF    # Disable install logs
+    # LOG_OUTPUT_ON_FAILURE OFF  # Show output only if the build fails
+	# COMMAND_ECHO STDOUT > ${CMAKE_BINARY_DIR}/poco_build_log.txt
 )
 
 message(STATUS "Poco will be installed in: ${POCO_INSTALL_DIR}")
