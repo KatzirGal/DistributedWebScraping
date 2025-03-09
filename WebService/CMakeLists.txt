@@ -1,4 +1,4 @@
-project(WorkerCore)
+project(WebService)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/file_list.cmake)
 
@@ -59,21 +59,18 @@ add_poco_library(Util Util)
 add_poco_library(JSON JSON)
 add_poco_library(XML XML)
 
-add_library(WorkerCore STATIC
+add_library(WebService STATIC
     ${SOURCE_FILES}
     ${HEADER_FILES}
 )
 
 # Include Poco headers
-target_include_directories(WorkerCore PRIVATE
+target_include_directories(WebService PRIVATE
     ${POCO_INSTALL_DIR}/${CMAKE_BUILD_TYPE}/include
-    ${WEB_SERVICE_DIR}/include
 )
 
 # Link Poco Libraries
-target_link_libraries(
-    WorkerCore 
-    WebService
+target_link_libraries(WebService 
     Poco::Foundation
     Poco::Net
     $<$<PLATFORM_ID:Unix>:Poco::NetSSL>
@@ -83,51 +80,51 @@ target_link_libraries(
     Common
 )
 
-add_custom_command(TARGET WorkerCore POST_BUILD
+add_custom_command(TARGET WebService POST_BUILD
     # === Foundation ===
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<$<AND:$<PLATFORM_ID:Windows>,$<CONFIG:Debug>>:${POCO_INSTALL_DIR}/Debug/bin/PocoFoundationd.dll>
     $<$<AND:$<PLATFORM_ID:Windows>,$<NOT:$<CONFIG:Debug>>>:${POCO_INSTALL_DIR}/$<CONFIG>/bin/PocoFoundation.dll>
     $<$<NOT:$<PLATFORM_ID:Windows>>:${POCO_INSTALL_DIR}/$<CONFIG>/lib/libPocoFoundation.so>
-    $<TARGET_FILE_DIR:WorkerCore>
+    $<TARGET_FILE_DIR:WebService>
 
     # === Net ===
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<$<AND:$<PLATFORM_ID:Windows>,$<CONFIG:Debug>>:${POCO_INSTALL_DIR}/Debug/bin/PocoNetd.dll>
     $<$<AND:$<PLATFORM_ID:Windows>,$<NOT:$<CONFIG:Debug>>>:${POCO_INSTALL_DIR}/$<CONFIG>/bin/PocoNet.dll>
     $<$<NOT:$<PLATFORM_ID:Windows>>:${POCO_INSTALL_DIR}/$<CONFIG>/lib/libPocoNet.so>
-    $<TARGET_FILE_DIR:WorkerCore>
+    $<TARGET_FILE_DIR:WebService>
 
     # === Util ===
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<$<AND:$<PLATFORM_ID:Windows>,$<CONFIG:Debug>>:${POCO_INSTALL_DIR}/Debug/bin/PocoUtild.dll>
     $<$<AND:$<PLATFORM_ID:Windows>,$<NOT:$<CONFIG:Debug>>>:${POCO_INSTALL_DIR}/$<CONFIG>/bin/PocoUtil.dll>
     $<$<NOT:$<PLATFORM_ID:Windows>>:${POCO_INSTALL_DIR}/$<CONFIG>/lib/libPocoUtil.so>
-    $<TARGET_FILE_DIR:WorkerCore>
+    $<TARGET_FILE_DIR:WebService>
 
     # === JSON ===
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<$<AND:$<PLATFORM_ID:Windows>,$<CONFIG:Debug>>:${POCO_INSTALL_DIR}/Debug/bin/PocoJSONd.dll>
     $<$<AND:$<PLATFORM_ID:Windows>,$<NOT:$<CONFIG:Debug>>>:${POCO_INSTALL_DIR}/$<CONFIG>/bin/PocoJSON.dll>
     $<$<NOT:$<PLATFORM_ID:Windows>>:${POCO_INSTALL_DIR}/$<CONFIG>/lib/libPocoJSON.so>
-    $<TARGET_FILE_DIR:WorkerCore>
+    $<TARGET_FILE_DIR:WebService>
 
     # === XML ===
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<$<AND:$<PLATFORM_ID:Windows>,$<CONFIG:Debug>>:${POCO_INSTALL_DIR}/Debug/bin/PocoXMLd.dll>
     $<$<AND:$<PLATFORM_ID:Windows>,$<NOT:$<CONFIG:Debug>>>:${POCO_INSTALL_DIR}/$<CONFIG>/bin/PocoXML.dll>
     $<$<NOT:$<PLATFORM_ID:Windows>>:${POCO_INSTALL_DIR}/$<CONFIG>/lib/libPocoXML.so>
-    $<TARGET_FILE_DIR:WorkerCore>
+    $<TARGET_FILE_DIR:WebService>
 )
 
 if(UNIX)
-    add_custom_command(TARGET WorkerCore POST_BUILD
+    add_custom_command(TARGET WebService POST_BUILD
         # === NetSSL ===
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${POCO_INSTALL_DIR}/$<CONFIG>/lib/libPocoNetSSL.so
-            $<TARGET_FILE_DIR:WorkerCore>
+            $<TARGET_FILE_DIR:WebService>
     )
 endif()
 
 
-target_include_directories(WorkerCore PUBLIC include)
+target_include_directories(WebService PUBLIC include)

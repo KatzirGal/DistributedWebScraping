@@ -19,7 +19,7 @@ foreach(OUTPUT_CONFIG Debug Release RelWithDebInfo MinSizeRel)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${BUILD_OUTPUT_DIR}/lib)
 endforeach()
 
-add_executable(WorkerNode src/worker_node.cpp)
+add_executable(WorkerNode src/WorkerNode.cpp)
 target_link_libraries(WorkerNode PRIVATE WorkerCore)
 
 add_custom_command(TARGET WorkerNode POST_BUILD

@@ -1,4 +1,4 @@
-#include "worker_core.h"
+#include "WorkerCore.h"
 
 int main(int argc, char* argv[])
 {

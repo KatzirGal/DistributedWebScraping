@@ -1,7 +1,7 @@
 set(SOURCE_FILES
-    src/worker_core.cpp
+    src/WorkerCore.cpp
 )
 
 set(HEADER_FILES
-	include/worker_core.h
+	include/WorkerCore.h
 )
