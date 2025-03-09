@@ -28,7 +28,7 @@ bool WorkerCore::HandleRequest(const Poco::URI& uri, const Poco::URI::QueryParam
     {
         return true;
     }
-    else if (uri.getPath() == "/api/v1/stats") // stats will handle also here
+    else if (uri.getPath() == "/api/v1/stats")
     {
         Poco::JSON::Object responseObj;
 
