@@ -68,19 +68,20 @@ add_library(WorkerCore STATIC
 target_include_directories(WorkerCore PRIVATE
     ${POCO_INSTALL_DIR}/${CMAKE_BUILD_TYPE}/include
     ${WEB_SERVICE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/Dependencies/CMAKE_BUILD/_deps/argparse-src/include
 )
 
 # Link Poco Libraries
 target_link_libraries(
     WorkerCore 
     WebService
+    Common
     Poco::Foundation
     Poco::Net
     $<$<PLATFORM_ID:Unix>:Poco::NetSSL>
     Poco::Util
     Poco::JSON
     Poco::XML
-    Common
 )
 
 add_custom_command(TARGET WorkerCore POST_BUILD

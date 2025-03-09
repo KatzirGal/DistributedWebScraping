@@ -20,5 +20,8 @@ protected:
 	int main(const std::vector<std::string>& argv) override;
 
 private:
+	void NotifyMaster(const std::string& masterIP, unsigned short masterPort, unsigned short workerPort);
+
+private:
 
 };

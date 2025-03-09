@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorkerNode", "..\CMAKE_BUIL
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WebService", "..\CMAKE_BUILD\WebService\WebService.vcxproj", "{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Poco", "..\Dependencies\CMAKE_BUILD\Poco.vcxproj", "{C0F0A2B4-3AFB-3338-B39B-E717A38580A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -81,6 +83,14 @@ Global
 		{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}.Release|x64.Build.0 = Release|x64
 		{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}.Release|x86.ActiveCfg = Release|x64
 		{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}.Release|x86.Build.0 = Release|x64
+		{C0F0A2B4-3AFB-3338-B39B-E717A38580A8}.Debug|x64.ActiveCfg = Debug|x64
+		{C0F0A2B4-3AFB-3338-B39B-E717A38580A8}.Debug|x64.Build.0 = Debug|x64
+		{C0F0A2B4-3AFB-3338-B39B-E717A38580A8}.Debug|x86.ActiveCfg = Debug|x64
+		{C0F0A2B4-3AFB-3338-B39B-E717A38580A8}.Debug|x86.Build.0 = Debug|x64
+		{C0F0A2B4-3AFB-3338-B39B-E717A38580A8}.Release|x64.ActiveCfg = Release|x64
+		{C0F0A2B4-3AFB-3338-B39B-E717A38580A8}.Release|x64.Build.0 = Release|x64
+		{C0F0A2B4-3AFB-3338-B39B-E717A38580A8}.Release|x86.ActiveCfg = Release|x64
+		{C0F0A2B4-3AFB-3338-B39B-E717A38580A8}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
