@@ -1,5 +1,5 @@
-project(orchestrator)
+project(Orchestrator)
 
-add_executable(orchestrator src/main.cpp)
+add_executable(Orchestrator src/orchestrator.cpp)
 
-target_link_libraries(orchestrator PRIVATE common)
+target_link_libraries(Orchestrator PRIVATE Common)

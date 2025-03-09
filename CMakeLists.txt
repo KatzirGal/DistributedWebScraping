@@ -1,17 +1,17 @@
 cmake_minimum_required(VERSION 3.16)
-project(DWS)
+project(DistributedWebScraping)
 
 # Enable C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Define directories
-set(COMMON_DIR ${CMAKE_SOURCE_DIR}/common)
-set(MASTER_CORE_DIR ${CMAKE_SOURCE_DIR}/master_core)
-set(WORKER_CORE_DIR ${CMAKE_SOURCE_DIR}/worker_core)
-set(MASTER_DIR ${CMAKE_SOURCE_DIR}/master_node)
-set(WORKER_DIR ${CMAKE_SOURCE_DIR}/worker_node)
-set(ORCHESTRATOR_DIR ${CMAKE_SOURCE_DIR}/orchestrator)
+set(COMMON_DIR ${CMAKE_SOURCE_DIR}/Common)
+set(MASTER_CORE_DIR ${CMAKE_SOURCE_DIR}/MasterCore)
+set(WORKER_CORE_DIR ${CMAKE_SOURCE_DIR}/WorkerCore)
+set(MASTER_DIR ${CMAKE_SOURCE_DIR}/MasterNode)
+set(WORKER_DIR ${CMAKE_SOURCE_DIR}/WorkerNode)
+set(ORCHESTRATOR_DIR ${CMAKE_SOURCE_DIR}/Orchestrator)
 
 # Add subprojects
 add_subdirectory(${COMMON_DIR})

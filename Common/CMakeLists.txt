@@ -1,8 +1,8 @@
-project(common)
+project(Common)
 
-add_library(common STATIC
+add_library(Common STATIC
     src/networking.cpp
     src/logging.cpp
 )
 
-target_include_directories(common PUBLIC include)
+target_include_directories(Common PUBLIC include)

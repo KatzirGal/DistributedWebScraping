@@ -1,4 +1,4 @@
-project(worker_node)
+project(WorkerNode)
 
-add_executable(worker_node src/main.cpp)
-target_link_libraries(worker_node PRIVATE worker_core)
+add_executable(WorkerNode src/worker_node.cpp)
+target_link_libraries(WorkerNode PRIVATE WorkerCore)

@@ -1,4 +1,4 @@
-project(master_node)
+project(MasterNode)
 
-add_executable(master_node src/main.cpp)
-target_link_libraries(master_node PRIVATE master_core)
+add_executable(MasterNode src/master_node.cpp)
+target_link_libraries(MasterNode PRIVATE MasterCore)
