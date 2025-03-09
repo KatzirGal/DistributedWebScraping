@@ -3,20 +3,16 @@ project(argparseDependency)
 
 include(FetchContent)
 
-# Declare argparse
+set(ARGPARSE_SOURCE_DIR ${CMAKE_BINARY_DIR}/Dependencies/argparse/src)
+set(ARGPARSE_BINARY_DIR ${CMAKE_BINARY_DIR}/Dependencies/argparse/CMakeBUILD)
+
 FetchContent_Declare(
     argparse
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
-    GIT_TAG v2.4  # Latest stable release
+    GIT_TAG v2.9
+    SOURCE_DIR ${ARGPARSE_SOURCE_DIR}
+    BINARY_DIR ${ARGPARSE_BINARY_DIR}
 )
 
-# Fetch and make argparse available
 FetchContent_MakeAvailable(argparse)
 
-# Create an interface library for argparse
-add_library(argparse_lib INTERFACE)
-
-# FetchContent places argparse in `_deps`, so we must use the correct variable:
-target_include_directories(argparse_lib INTERFACE ${CMAKE_SOURCE_DIR}/Dependencies/CMAKE_BUILD/_deps/argparse-src/include)
-
-message(STATUS "argparse headers are located in: ${CMAKE_SOURCE_DIR}/Dependencies/CMAKE_BUILD/_deps/argparse-src/include")

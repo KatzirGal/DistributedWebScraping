@@ -21,7 +21,7 @@ foreach(OUTPUT_CONFIG Debug Release RelWithDebInfo MinSizeRel)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${BUILD_OUTPUT_DIR}/lib)
 endforeach()
 
-set(POCO_INSTALL_DIR ${CMAKE_SOURCE_DIR}/Dependencies/CMAKE_BUILD/install)
+set(POCO_INSTALL_DIR ${CMAKE_SOURCE_DIR}/Dependencies/Poco/CMAKE_BUILD/install)
 
 # Tell CMake to search Poco in this directory
 set(CMAKE_PREFIX_PATH ${POCO_INSTALL_DIR})
@@ -68,7 +68,7 @@ add_library(WorkerCore STATIC
 target_include_directories(WorkerCore PRIVATE
     ${POCO_INSTALL_DIR}/${CMAKE_BUILD_TYPE}/include
     ${WEB_SERVICE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/Dependencies/CMAKE_BUILD/_deps/argparse-src/include
+    ${CMAKE_SOURCE_DIR}/Dependencies/argparse/CMAKE_BUILD/Dependencies/argparse/src/include
 )
 
 # Link Poco Libraries

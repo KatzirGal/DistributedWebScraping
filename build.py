@@ -37,15 +37,19 @@ def main():
             raise RuntimeError("No suitable compiler found (Should be g++-13)")
         unix_compiler = find_unix_compiler()
 
-        poco_cmake_dir = os.path.abspath(f'Dependencies/CMAKE_BUILD/install/{args.config}/lib/cmake/Poco')
+        poco_cmake_dir = os.path.abspath(f'Dependencies/Poco/CMAKE_BUILD/install/{args.config}/lib/cmake/Poco')
         
-        run_command(f'cmake -B {cmake_build_folder} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE={args.config} -DCMAKE_CXX_COMPILER={unix_compiler} -DCMAKE_PREFIX_PATH={poco_cmake_dir} -DPoco_DIR={poco_cmake_dir} -DPocoFoundation_DIR={poco_cmake_dir}', cwd='Dependencies')
-        run_command(f'cmake --build {cmake_build_folder} --config {args.config} --target Poco', cwd='Dependencies')
+        run_command(f'cmake -B {cmake_build_folder} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE={args.config} -DCMAKE_CXX_COMPILER={unix_compiler} -DCMAKE_PREFIX_PATH={poco_cmake_dir} -DPoco_DIR={poco_cmake_dir} -DPocoFoundation_DIR={poco_cmake_dir}', cwd='Dependencies/Poco')
+        run_command(f'cmake --build {cmake_build_folder} --config {args.config} --target Poco', cwd='Dependencies/Poco')
         run_command(f'cmake -B {cmake_build_folder} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE={args.config} -DCMAKE_CXX_COMPILER={unix_compiler} -DCMAKE_PREFIX_PATH={poco_cmake_dir} -DPoco_DIR={poco_cmake_dir} -DPocoFoundation_DIR={poco_cmake_dir}')
     else:
-        poco_cmake_dir = os.path.abspath(f'Dependencies/CMAKE_BUILD/install/{args.config}/cmake')
-        run_command(f'cmake -B {cmake_build_folder} -S . -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config} -DPoco_DIR={poco_cmake_dir}', cwd='Dependencies')
-        run_command(f'cmake --build {cmake_build_folder} --config {args.config} --target Poco', cwd='Dependencies')
+        poco_cmake_dir = os.path.abspath(f'Dependencies/poco/CMAKE_BUILD/install/{args.config}/cmake')
+        run_command(f'cmake -B {cmake_build_folder} -S . -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config} -DPoco_DIR={poco_cmake_dir}', cwd='Dependencies/Poco')
+        run_command(f'cmake --build {cmake_build_folder} --config {args.config} --target Poco', cwd='Dependencies/Poco')
+        
+        run_command(f'cmake -B {cmake_build_folder} -S . -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config}', cwd='Dependencies/argparse')
+        run_command(f'cmake --build {cmake_build_folder} --config {args.config}', cwd='Dependencies/argparse')
+        
         run_command(f'cmake -B {cmake_build_folder} -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config} -DPoco_DIR={poco_cmake_dir}')
 
 

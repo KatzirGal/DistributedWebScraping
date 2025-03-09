@@ -21,7 +21,7 @@ foreach(OUTPUT_CONFIG Debug Release RelWithDebInfo MinSizeRel)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${BUILD_OUTPUT_DIR}/lib)
 endforeach()
 
-set(POCO_INSTALL_DIR ${CMAKE_SOURCE_DIR}/Dependencies/CMAKE_BUILD/install)
+set(POCO_INSTALL_DIR ${CMAKE_SOURCE_DIR}/Dependencies/Poco/CMAKE_BUILD/install)
 
 # Tell CMake to search Poco in this directory
 set(CMAKE_PREFIX_PATH ${POCO_INSTALL_DIR})
