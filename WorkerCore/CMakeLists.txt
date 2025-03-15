@@ -10,7 +10,6 @@ add_library(WorkerCore STATIC
     ${HEADER_FILES}
 )
 
-# Include Poco headers
 target_include_directories(WorkerCore PRIVATE
     ${POCO_INSTALL_DIR}/${CMAKE_BUILD_TYPE}/include
     ${WEB_SERVICE_DIR}/include
@@ -21,9 +20,7 @@ target_include_directories(WorkerCore PUBLIC
     include
 )
 
-# Link Poco Libraries
-target_link_libraries(
-    WorkerCore 
+target_link_libraries( WorkerCore
     WebService
     Common
     Poco::Foundation

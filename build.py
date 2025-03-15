@@ -44,10 +44,11 @@ def main():
         run_command(f'cmake -B {cmake_build_folder} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE={args.config} -DCMAKE_CXX_COMPILER={unix_compiler} -DCMAKE_PREFIX_PATH={poco_cmake_dir} -DPoco_DIR={poco_cmake_dir} -DPocoFoundation_DIR={poco_cmake_dir}')
     else:
         poco_cmake_dir = os.path.abspath(f'Dependencies/poco/CMAKE_BUILD/install/{args.config}/cmake')
-        run_command(f'cmake -B {cmake_build_folder} -S . -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config} -DPoco_DIR={poco_cmake_dir}', cwd='Dependencies/Poco')
+        run_command(f'cmake -B {cmake_build_folder} -S Dependencies/Poco -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config} -DPoco_DIR={poco_cmake_dir}')
+        run_command(f'buildwin.ps1 -openssl_base 1.1.0 -vs 170 -config debug -platform x64 -linkmode shared', cwd='Dependencies/Poco/CMAKE_BUILD/Poco/src/Poco')
         run_command(f'cmake --build {cmake_build_folder} --config {args.config} --target Poco', cwd='Dependencies/Poco')
         
-        run_command(f'cmake -B {cmake_build_folder} -S . -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config}', cwd='Dependencies/argparse')
+        run_command(f'cmake -B {cmake_build_folder} -S Dependencies/argparse -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config}')
         run_command(f'cmake --build {cmake_build_folder} --config {args.config}', cwd='Dependencies/argparse')
         
         run_command(f'cmake -B {cmake_build_folder} -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config} -DPoco_DIR={poco_cmake_dir}')

@@ -2,10 +2,11 @@
 
 #include "JSONRequestHandlerFactory.h"
 #include "WebServiceBase.h"
-#include <argparse/argparse.hpp> 
 #include <iostream>
 #include <sstream>
+#include "networking.h"
 
+#include <argparse/argparse.hpp> 
 #include <Poco/JSON/Object.h>
 #include <Poco/Net/HTTPClientSession.h>
 #include <Poco/Net/HTTPRequest.h>
@@ -29,8 +30,15 @@ bool WorkerCore::HandleRequest(const Poco::URI& uri, const Poco::URI::QueryParam
     }
 
 
-    if (uri.getPath() == "/api/v1/similar")
+    if (uri.getPath() == "/api/v1/get_urls")
     {
+        DownloadFile("https://www.ynet.co.il/home/0,7340,L-8,00.html", "C:/Users/Gal/Downloads/myHtml.html");
+
+        Poco::JSON::Object responseObj;
+
+        responseObj.set("get_urls", "ok");
+        responseObj.stringify(out);
+
         return true;
     }
     else if (uri.getPath() == "/api/v1/stats")
@@ -83,7 +91,7 @@ int WorkerCore::main(const std::vector<std::string>& argv)
     unsigned short masterPort = static_cast<unsigned short>(program.get<int>("master_port"));
 
     // Choose an available port
-    Poco::Net::ServerSocket svs(0);
+    Poco::Net::ServerSocket svs(8000);
     unsigned short workerPort = svs.address().port();
     std::cout << "WorkerNode listening on port: " << workerPort << std::endl;
 

@@ -1,0 +1,159 @@
+#include <iostream>
+#include <queue>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <memory>
+#include <vector>
+
+class Task {
+public:
+    int id;
+    explicit Task(int id) : id(id) {}
+    void process() { std::cout << "Processing task " << id << std::endl; }
+};
+
+
+template <typename T>
+class ThreadSafeQueue {
+private:
+    std::queue<std::unique_ptr<T>> queue;
+    std::mutex mtx;
+    std::condition_variable cv;
+
+public:
+    void push(std::unique_ptr<T> task) {
+        std::lock_guard<std::mutex> lock(mtx);
+        queue.push(std::move(task));
+        cv.notify_one();
+    }
+
+    std::unique_ptr<T> pop() {
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(lock, [this] { return !queue.empty(); });
+        auto task = std::move(queue.front());
+        queue.pop();
+        return task;
+    }
+};
+
+
+
+ThreadSafeQueue<Task> readQueue;
+ThreadSafeQueue<Task> processQueue;
+ThreadSafeQueue<Task> writeQueue;
+
+void reader() {
+    for (int i = 0; i < 10; ++i) {
+        auto task = std::make_unique<Task>(i);
+        std::cout << "Reading task " << task->id << std::endl;
+        readQueue.push(std::move(task));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+void processor() {
+    while (true) {
+        auto task = readQueue.pop();
+        if (!task) break;
+        task->process();
+        processQueue.push(std::move(task));
+    }
+}
+
+void writer() {
+    while (true) {
+        auto task = processQueue.pop();
+        if (!task) break;
+        std::cout << "Writing task " << task->id << std::endl;
+    }
+}
+
+
+int main() {
+    std::thread readerThread(reader);
+    std::thread processorThread(processor);
+    std::thread writerThread(writer);
+
+    readerThread.join();
+    processorThread.join();
+    writerThread.join();
+
+    return 0;
+}
+
+
+Multi-Producer Multi-Consumer (MPMC) Queue
+
+#include <iostream>
+#include <atomic>
+#include <memory>
+
+template <typename T>
+class LockFreeQueue {
+private:
+    struct Node {
+        std::unique_ptr<T> data;
+        std::atomic<Node*> next;
+
+        Node(T val) : data(std::make_unique<T>(val)), next(nullptr) {}
+    };
+
+    std::atomic<Node*> head;
+    std::atomic<Node*> tail;
+
+public:
+    LockFreeQueue() {
+        Node* dummy = new Node(T()); // Dummy node
+        head.store(dummy);
+        tail.store(dummy);
+    }
+
+    void enqueue(T val) {
+        Node* newNode = new Node(val);
+        Node* oldTail;
+
+        while (true) {
+            oldTail = tail.load();
+            Node* next = oldTail->next.load();
+
+            if (oldTail == tail.load()) {  // ווידוא שהזנב לא השתנה
+                if (next == nullptr) {  // אם הזנב הוא הסוף, מחברים אליו את החדש
+                    if (oldTail->next.compare_exchange_weak(next, newNode)) {
+                        tail.compare_exchange_weak(oldTail, newNode);  // מעדכנים את הזנב
+                        return;
+                    }
+                } else {
+                    tail.compare_exchange_weak(oldTail, next);  // אם הזנב זז קדימה, מעדכנים
+                }
+            }
+        }
+    }
+
+    std::unique_ptr<T> dequeue() {
+        Node* oldHead;
+
+        while (true) {
+            oldHead = head.load();
+            Node* oldTail = tail.load();
+            Node* next = oldHead->next.load();
+
+            if (oldHead == head.load()) {  // ווידוא שהראש לא השתנה
+                if (oldHead == oldTail) {  // אם הראש והזנב שווים - התור ריק
+                    if (next == nullptr) {
+                        return nullptr;
+                    }
+                    tail.compare_exchange_weak(oldTail, next);
+                } else {
+                    if (head.compare_exchange_weak(oldHead, next)) {
+                        std::unique_ptr<T> result = std::move(next->data);
+                        delete oldHead;
+                        return result;
+                    }
+                }
+            }
+        }
+    }
+};
+
+

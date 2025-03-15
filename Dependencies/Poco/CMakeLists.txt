@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(Dependencies)
+project(PocoDependency)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -36,8 +36,7 @@ ExternalProject_Add(
         -DBUILD_SHARED_LIBS=ON
         -DPOCO_UNBUNDLED=OFF
         -DENABLE_NET=ON
-        $<$<NOT:$<PLATFORM_ID:Windows>>:-DENABLE_NETSSL=ON>
-        $<$<PLATFORM_ID:Windows>:-DENABLE_NETSSL=OFF>
+        -DENABLE_NETSSL=ON
         -DENABLE_NETHTTP=ON
         -DENABLE_WEBSOCKET=ON
         -DENABLE_UTIL=ON
