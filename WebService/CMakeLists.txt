@@ -3,9 +3,6 @@ project(WebService)
 # Include file list
 include(${CMAKE_CURRENT_SOURCE_DIR}/file_list.cmake)
 
-# Include the common Poco configuration
-include(${CMAKE_SOURCE_DIR}/poco_config.cmake)
-
 add_library(WebService STATIC
     ${SOURCE_FILES}
     ${HEADER_FILES}
@@ -22,11 +19,5 @@ target_include_directories(WebService PUBLIC
 
 # Link Poco Libraries
 target_link_libraries(WebService 
-    Poco::Foundation
-    Poco::Net
-    $<$<PLATFORM_ID:Unix>:Poco::NetSSL>
-    Poco::Util
-    Poco::JSON
-    Poco::XML
     Common
 )

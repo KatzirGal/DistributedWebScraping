@@ -2,9 +2,6 @@ project(WorkerCore)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/file_list.cmake)
 
-# Include the common Poco configuration
-include(${CMAKE_SOURCE_DIR}/poco_config.cmake)
-
 add_library(WorkerCore STATIC
     ${SOURCE_FILES}
     ${HEADER_FILES}
@@ -23,10 +20,4 @@ target_include_directories(WorkerCore PUBLIC
 target_link_libraries( WorkerCore
     WebService
     Common
-    Poco::Foundation
-    Poco::Net
-    $<$<PLATFORM_ID:Unix>:Poco::NetSSL>
-    Poco::Util
-    Poco::JSON
-    Poco::XML
 )
