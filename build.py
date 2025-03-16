@@ -42,31 +42,27 @@ def main():
         run_command(f'cmake --build {cmake_build_folder} --config {args.config} --target Poco', cwd='Dependencies/Poco')
         run_command(f'cmake -B {cmake_build_folder} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE={args.config} -DCMAKE_CXX_COMPILER={unix_compiler} -DCMAKE_PREFIX_PATH={poco_cmake_dir} -DPoco_DIR={poco_cmake_dir} -DPocoFoundation_DIR={poco_cmake_dir}')
     else:
-        print("Configuring CMake to use Boost...")
-        
+        print("Configuring CMake to use Boost and OpenSSL...")
+
         boost_install_dir = os.path.abspath(f'Dependencies/boost/CMAKE_BUILD/install/{args.config}')
         boost_cmake_dir = os.path.join(boost_install_dir, "lib", "cmake", "Boost-1.83.0")
 
-        print(f"Boost_DIR set to: {boost_cmake_dir}")  # Debugging output
+        openssl_root = "C:/OpenSSL-Win64"
+        openssl_include = os.path.join(openssl_root, "include").replace('\\', '/')
 
         run_command(f'cmake -B {cmake_build_folder} -S . -G "Visual Studio 17 2022" -A x64 '
                     f'-DCMAKE_BUILD_TYPE={args.config} '
-                    f'-DBoost_DIR={boost_cmake_dir} '
-                    f'-DCMAKE_PREFIX_PATH={boost_cmake_dir}')
-
-        print("Building Boost CMake targets...")
-        run_command(f'cmake --build {cmake_build_folder} --config {args.config}', cwd='Dependencies/boost')
-
-        # Step 7: Configure and Build the Main Project
-        print("Building argparse dependency...")
-        run_command(f'cmake -B {cmake_build_folder} -S . -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config}', cwd='Dependencies/argparse')
-        run_command(f'cmake --build {cmake_build_folder} --config {args.config}', cwd='Dependencies/argparse')
-        
-        print("Configuring the main project...")
-        run_command(f'cmake -B {cmake_build_folder} -G "Visual Studio 17 2022" -A x64 '
-                    f'-DCMAKE_BUILD_TYPE={args.config} '
-                    f'-DBoost_DIR={boost_cmake_dir} '
-                    f'-DCMAKE_PREFIX_PATH={boost_cmake_dir}')
+                    f'-DBoost_DIR="{boost_cmake_dir}" '
+                    f'-DCMAKE_PREFIX_PATH="{boost_cmake_dir};{openssl_root};C:/OpenSSL-Win64/lib/VC/x64/MDd" '
+                    f'-DOPENSSL_ROOT_DIR="{openssl_root}" '
+                    f'-DOPENSSL_INCLUDE_DIR="{openssl_include}" '
+                    f'-DOPENSSL_USE_STATIC_LIBS=TRUE '
+                    f'-DOPENSSL_CRYPTO_LIBRARY="{openssl_root}/lib/VC/x64/MDd/libcrypto_staticd.lib" '
+                    f'-DOPENSSL_SSL_LIBRARY="{openssl_root}/lib/VC/x64/MDd/libssl_staticd.lib" '
+                    f'-DOPENSSL_LIBRARIES="{openssl_root}/lib/VC/x64/MDd/libssl_staticd.lib;{openssl_root}/lib/VC/x64/MDd/libcrypto_staticd.lib" '
+                    f'-DCMAKE_REQUIRED_LIBRARIES="{openssl_root}/lib/VC/x64/MDd/libssl_staticd.lib;{openssl_root}/lib/VC/x64/MDd/libcrypto_staticd.lib"'
+                    f'-DOPENSSL_NO_DEFAULT_PATH=TRUE'
+                    )
 
 
 

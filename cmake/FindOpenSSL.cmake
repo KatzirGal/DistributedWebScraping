@@ -1,0 +1,24 @@
+set(OPENSSL_FOUND TRUE)
+set(OPENSSL_ROOT_DIR "C:/OpenSSL-Win64")
+set(OPENSSL_INCLUDE_DIR "C:/OpenSSL-Win64/include")
+set(OPENSSL_USE_STATIC_LIBS TRUE)
+
+set(OPENSSL_CRYPTO_LIBRARY "C:/OpenSSL-Win64/lib/VC/x64/MDd/libcrypto_staticd.lib")
+set(OPENSSL_SSL_LIBRARY "C:/OpenSSL-Win64/lib/VC/x64/MDd/libssl_staticd.lib")
+set(OPENSSL_LIBRARIES "${OPENSSL_SSL_LIBRARY};${OPENSSL_CRYPTO_LIBRARY}")
+
+if (NOT TARGET OpenSSL::SSL)
+    add_library(OpenSSL::SSL UNKNOWN IMPORTED)
+    set_target_properties(OpenSSL::SSL PROPERTIES
+        IMPORTED_LOCATION "${OPENSSL_SSL_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}"
+    )
+endif()
+
+if (NOT TARGET OpenSSL::Crypto)
+    add_library(OpenSSL::Crypto UNKNOWN IMPORTED)
+    set_target_properties(OpenSSL::Crypto PROPERTIES
+        IMPORTED_LOCATION "${OPENSSL_CRYPTO_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}"
+    )
+endif()

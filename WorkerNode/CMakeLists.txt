@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.27)
 project(WorkerNode)
 
 add_executable(WorkerNode src/WorkerNode.cpp)
