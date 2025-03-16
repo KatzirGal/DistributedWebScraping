@@ -1,90 +1,146 @@
 #include "networking.h"
 
-#include <Poco/URI.h>
-#include <Poco/Net/HTTPClientSession.h>
-#include <Poco/Net/HTTPSClientSession.h>
-#include <Poco/Net/HTTPRequest.h>
-#include <Poco/Net/HTTPResponse.h>
-#include <Poco/Net/HTTPCookie.h>
-#include <Poco/StreamCopier.h>
-#include <Poco/Net/Context.h>
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <boost/beast/ssl.hpp>
+#include <boost/asio/ssl.hpp>
 #include <fstream>
 #include <iostream>
-#include <vector>
-#include <memory>  // For std::unique_ptr
 
-bool DownloadFile(const std::string& url, const std::string& outputFilename)
-{
+namespace asio = boost::asio;
+namespace beast = boost::beast;
+namespace http = beast::http;
+namespace ssl = boost::asio::ssl;
+using tcp = asio::ip::tcp;
+
+bool DownloadFile(const std::string& url, const std::string& outputFilename) {
     try {
         // Parse the URL
-        Poco::URI uri(url);
-        std::string scheme = uri.getScheme();
-        std::string host = uri.getHost();
-        unsigned short port = uri.getPort();
-        std::string path = uri.getPathAndQuery();
-        if (path.empty()) path = "/";
+        std::string protocol, host, target;
+        unsigned short port = 80; // Default HTTP port
 
-        // Create the appropriate session type dynamically
-        std::unique_ptr<Poco::Net::HTTPClientSession> session;
-
-        if (scheme == "https") {
-            // Create HTTPS session with SSL context
-            Poco::Net::Context::Ptr context = new Poco::Net::Context(
-                Poco::Net::Context::CLIENT_USE, "", "", "", Poco::Net::Context::VERIFY_RELAXED
-            );
-            session = std::make_unique<Poco::Net::HTTPSClientSession>(host, port, context);
+        if (url.substr(0, 7) == "http://") {
+            protocol = "http";
+            host = url.substr(7);
+            port = 80;
+        }
+        else if (url.substr(0, 8) == "https://") {
+            protocol = "https";
+            host = url.substr(8);
+            port = 443; // Default HTTPS port
         }
         else {
-            // Create HTTP session
-            session = std::make_unique<Poco::Net::HTTPClientSession>(host, port);
+            std::cerr << "Invalid URL format.\n";
+            return false;
         }
 
-        // Set timeout (30 seconds)
-        session->setTimeout(Poco::Timespan(30, 0));
-
-        // Create an HTTP GET request
-        Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_GET, path, Poco::Net::HTTPMessage::HTTP_1_1);
-
-        // Set a real User-Agent to prevent blocks
-        request.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36");
-
-        // Enable cookies
-        request.add("test_cookie", "test_value");
-
-        // Send the request
-        session->sendRequest(request);
-
-        // Get the HTTP response
-        Poco::Net::HTTPResponse response;
-        std::istream& responseStream = session->receiveResponse(response);
-
-        // Read cookies from the response
-        std::vector<Poco::Net::HTTPCookie> cookies;
-        response.getCookies(cookies);
-        for (const auto& c : cookies) {
-            //session->add(c);
+        // Extract the host and target (path)
+        size_t pos = host.find('/');
+        if (pos != std::string::npos) {
+            target = host.substr(pos);
+            host = host.substr(0, pos);
+        }
+        else {
+            target = "/";
         }
 
-        // Check if the request was successful (status 200 OK)
-        if (response.getStatus() != Poco::Net::HTTPResponse::HTTP_OK) {
-            throw std::runtime_error("Failed to download file, HTTP Status: " + std::to_string(response.getStatus()));
+        // Set up Boost.Asio and SSL context
+        asio::io_context ioc;
+        ssl::context ctx(ssl::context::sslv23_client);
+        tcp::resolver resolver(ioc);
+
+        if (protocol == "https") {
+            ctx.set_verify_mode(ssl::verify_peer);
+            ctx.set_default_verify_paths();
         }
 
-        // Open the output file for writing
-        std::ofstream outFile(outputFilename, std::ios::binary);
-        if (!outFile) {
-            throw std::runtime_error("Failed to open file for writing: " + outputFilename);
+        // Resolve the host
+        auto const results = resolver.resolve(host, std::to_string(port));
+
+        if (protocol == "http") {
+            // HTTP connection
+            tcp::socket socket(ioc);
+            asio::connect(socket, results.begin(), results.end());
+
+            // Set up HTTP GET request
+            http::request<http::string_body> req{ http::verb::get, target, 11 };
+            req.set(http::field::host, host);
+            req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+
+            // Send request
+            http::write(socket, req);
+
+            // Receive response
+            beast::flat_buffer buffer;
+            http::response<http::dynamic_body> res;
+            http::read(socket, buffer, res);
+
+            // Check response status
+            if (res.result() != http::status::ok) {
+                std::cerr << "HTTP request failed with status: " << res.result_int() << "\n";
+                return false;
+            }
+
+            // Write to file
+            std::ofstream outputFile(outputFilename, std::ios::binary);
+            if (!outputFile) {
+                std::cerr << "Failed to open output file: " << outputFilename << "\n";
+                return false;
+            }
+            outputFile << beast::buffers_to_string(res.body().data());
+            outputFile.close();
+
+            // Close connection
+            beast::error_code ec;
+            socket.shutdown(tcp::socket::shutdown_both, ec);
+            return true;
         }
+        else {
+            // HTTPS connection
+            beast::ssl_stream<beast::tcp_stream> sslStream(ioc, ctx);
+            beast::get_lowest_layer(sslStream).connect(results);
+            sslStream.handshake(ssl::stream_base::client);
 
-        // Copy response stream to file
-        Poco::StreamCopier::copyStream(responseStream, outFile);
-        outFile.close();
+            // Set up HTTPS GET request
+            http::request<http::string_body> req{ http::verb::get, target, 11 };
+            req.set(http::field::host, host);
+            req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
 
-        std::cout << "File downloaded successfully: " << outputFilename << std::endl;
-        return true;
+            // Send request
+            http::write(sslStream, req);
+
+            // Receive response
+            beast::flat_buffer buffer;
+            http::response<http::dynamic_body> res;
+            http::read(sslStream, buffer, res);
+
+            // Check response status
+            if (res.result() != http::status::ok) {
+                std::cerr << "HTTPS request failed with status: " << res.result_int() << "\n";
+                return false;
+            }
+
+            // Write to file
+            std::ofstream outputFile(outputFilename, std::ios::binary);
+            if (!outputFile) {
+                std::cerr << "Failed to open output file: " << outputFilename << "\n";
+                return false;
+            }
+            outputFile << beast::buffers_to_string(res.body().data());
+            outputFile.close();
+
+            // Close connection
+            beast::error_code ec;
+            sslStream.shutdown(ec);
+            if (ec && ec != beast::errc::not_connected) {
+                std::cerr << "Shutdown failed: " << ec.message() << "\n";
+            }
+
+            return true;
+        }
     }
     catch (const std::exception& e) {
-        std::cerr << "Error downloading file: " << e.what() << std::endl;
+        std::cerr << "Download failed: " << e.what() << "\n";
         return false;
     }
 }

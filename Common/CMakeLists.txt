@@ -7,15 +7,16 @@ add_library(Common STATIC
     ${HEADER_FILES}
 )
 
-target_include_directories(Common PRIVATE
-    ${POCO_INSTALL_DIR}/${CMAKE_BUILD_TYPE}/include
-)
+# Find Boost components that require linking
+find_package(Boost REQUIRED COMPONENTS system)
 
+# Include Boost headers manually (Beast & Asio are header-only)
 target_include_directories(Common PUBLIC 
     include
+    ${Boost_INCLUDE_DIRS}
 )
 
-target_link_libraries( Common
-    
+# Link necessary Boost libraries
+target_link_libraries(Common PUBLIC
+    Boost::system
 )
-

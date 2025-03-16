@@ -1,7 +1,7 @@
 project(WorkerNode)
 
 add_executable(WorkerNode src/WorkerNode.cpp)
-target_link_libraries(WorkerNode PRIVATE WorkerCore Poco::Foundation Poco::Net Poco::Util Poco::JSON Poco::XML)
+target_link_libraries(WorkerNode PRIVATE WorkerCore)
 
 add_custom_command(TARGET WorkerNode POST_BUILD
     # COMMAND ${CMAKE_COMMAND} -E copy_if_different
