@@ -42,10 +42,14 @@ http::response<http::string_body> WorkerCore::HandleRequest(const http::request<
             { "get_urls", "ok" }
         };
 
+        http::response<http::string_body> res;
+
+        res.version(req.version());                         
+        res.keep_alive(req.keep_alive());                   
         res.result(http::status::ok);
         res.set(http::field::content_type, "application/json");
         res.body() = json_response.dump();
-        res.prepare_payload();
+        res.prepare_payload();                              
         return res;
     }
     else if (target == "/api/v1/stats") {
