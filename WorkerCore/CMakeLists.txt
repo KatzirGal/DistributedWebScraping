@@ -18,6 +18,6 @@ target_include_directories(WorkerCore PUBLIC
 )
 
 target_link_libraries( WorkerCore
-    WebService
+    RestServer
     Common
 )

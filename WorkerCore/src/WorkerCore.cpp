@@ -1,7 +1,7 @@
 #include "WorkerCore.h"
 
 #include "JSONRequestHandlerFactory.h"
-#include "WebServiceBase.h"
+#include "RestServer.h"
 #include <iostream>
 #include <sstream>
 #include "networking.h"

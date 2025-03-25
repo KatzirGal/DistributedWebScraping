@@ -43,8 +43,9 @@ def main():
         run_command(f'cmake -B {cmake_build_folder} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE={args.config} -DCMAKE_CXX_COMPILER={unix_compiler} -DCMAKE_PREFIX_PATH={poco_cmake_dir} -DPoco_DIR={poco_cmake_dir} -DPocoFoundation_DIR={poco_cmake_dir}')
     else:
         print("Configuring CMake to use Boost and OpenSSL...")
-        
-        run_command(f'cmake -B {cmake_build_folder} -S Dependencies/argparse -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config}')
+    
+        # os.makedirs(os.path.join('Dependencies/argparse', cmake_build_folder), exist_ok=True)
+        run_command(f'cmake -B {cmake_build_folder}  -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config}', cwd='Dependencies/argparse')
         run_command(f'cmake --build {cmake_build_folder} --config {args.config}', cwd='Dependencies/argparse')
 
         boost_install_dir = os.path.abspath(f'Dependencies/boost/CMAKE_BUILD/install/{args.config}')
@@ -64,8 +65,13 @@ def main():
                     f'-DOPENSSL_SSL_LIBRARY="{openssl_root}/lib/VC/x64/MDd/libssl_staticd.lib" '
                     f'-DOPENSSL_LIBRARIES="{openssl_root}/lib/VC/x64/MDd/libssl_staticd.lib;{openssl_root}/lib/VC/x64/MDd/libcrypto_staticd.lib" '
                     f'-DCMAKE_REQUIRED_LIBRARIES="{openssl_root}/lib/VC/x64/MDd/libssl_staticd.lib;{openssl_root}/lib/VC/x64/MDd/libcrypto_staticd.lib"'
-                    f'-DOPENSSL_NO_DEFAULT_PATH=TRUE'
+                    f'-DOPENSSL_NO_DEFAULT_PATH=TRUE',
+                    cwd='Dependencies/boost'
                     )
+        
+        run_command(f'cmake --build {cmake_build_folder} --config {args.config}', cwd='Dependencies/boost')
+
+        run_command(f'cmake -B {cmake_build_folder} -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config} -DBoost_DIR="{boost_cmake_dir}')
 
 
 
