@@ -2,7 +2,8 @@
 
 int main(int argc, char* argv[])
 {
-    WorkerCore workerCore;
+    net::io_context ioc;
+    WorkerCore workerCore(ioc, 8000);
     return 0;
     //return workerCore.run(argc, argv);
 }

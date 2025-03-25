@@ -26,16 +26,14 @@ target_include_directories(WorkerNode
     PUBLIC
         include
     PRIVATE
+        ${Boost_INCLUDE_DIRS}
         ${CMAKE_SOURCE_DIR}/RestServer/include
 )
 
-target_include_directories(WorkerNode 
+target_link_libraries(WorkerNode
     PRIVATE
-        ${CMAKE_SOURCE_DIR}/RestServer/include
+        WorkerCore
         Common
-        Boost::system
-        Boost::thread
-        Boost::regex
         nlohmann_json::nlohmann_json
+        crypt32
 )
-
