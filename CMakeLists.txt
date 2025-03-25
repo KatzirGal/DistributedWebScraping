@@ -6,8 +6,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Include the common boost configuration
-include(${CMAKE_SOURCE_DIR}/boost_config.cmake)
 
 # Define directories
 set(COMMON_DIR ${CMAKE_SOURCE_DIR}/Common)

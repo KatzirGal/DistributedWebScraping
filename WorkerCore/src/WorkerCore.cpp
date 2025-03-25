@@ -1,138 +1,109 @@
 #include "WorkerCore.h"
 
-#include "JSONRequestHandlerFactory.h"
+#include "networking.h"
 #include "RestServer.h"
+
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
+#include <boost/beast/version.hpp>
+#include <boost/asio/connect.hpp>
+#include <boost/asio/ip/tcp.hpp>
+
+#include <nlohmann/json.hpp>
+
 #include <iostream>
 #include <sstream>
-#include "networking.h"
+#include <thread>
 
-#include <argparse/argparse.hpp> 
-#include <Poco/JSON/Object.h>
-#include <Poco/Net/HTTPClientSession.h>
-#include <Poco/Net/HTTPRequest.h>
-#include <Poco/Net/HTTPServer.h>
-#include <Poco/Net/HTTPServerParams.h>
-#include <Poco/Net/ServerSocket.h>
+using tcp = boost::asio::ip::tcp;
+namespace http = boost::beast::http;
 
-WorkerCore::WorkerCore()
+WorkerCore::WorkerCore(net::io_context& ioc, unsigned short port) : RestServer(ioc, port) {}
+
+WorkerCore::~WorkerCore() {}
+
+http::response<http::string_body> WorkerCore::HandleRequest(const http::request<http::string_body>& req)
 {
-}
+    http::response<http::string_body> res;
 
-WorkerCore::~WorkerCore()
-{
-}
-
-bool WorkerCore::HandleRequest(const Poco::URI& uri, const Poco::URI::QueryParameters& queryParameters, Poco::Net::HTTPServerResponse& response, std::ostream& out)
-{
-    std::unordered_map<std::string, std::string> params;
-    for (const auto& queryParameter : queryParameters) {
-        params[queryParameter.first] = queryParameter.second;
+    if (req.method() != http::verb::get && req.method() != http::verb::post) {
+        res.result(http::status::bad_request);
+        res.body() = "Unsupported HTTP method";
+        res.prepare_payload();
+        return res;
     }
 
+    const std::string target = std::string(req.target());
 
-    if (uri.getPath() == "/api/v1/get_urls")
-    {
+    if (target == "/api/v1/get_urls") {
         DownloadFile("https://www.ynet.co.il/home/0,7340,L-8,00.html", "C:/Users/Gal/Downloads/myHtml.html");
 
-        Poco::JSON::Object responseObj;
+        nlohmann::json json_response = {
+            { "get_urls", "ok" }
+        };
 
-        responseObj.set("get_urls", "ok");
-        responseObj.stringify(out);
-
-        return true;
+        res.result(http::status::ok);
+        res.set(http::field::content_type, "application/json");
+        res.body() = json_response.dump();
+        res.prepare_payload();
+        return res;
     }
-    else if (uri.getPath() == "/api/v1/stats")
-    {
-        Poco::JSON::Object responseObj;
+    else if (target == "/api/v1/stats") {
+        nlohmann::json json_response = {
+            { "totalRequests", 5432 }
+        };
 
-        responseObj.set("totalRequests", 5432);
-        responseObj.stringify(out);
-
-        return true;
-    }
-
-    return false;
-}
-
-int WorkerCore::main(const std::vector<std::string>& argv)
-{
-    // Workaround for program.parse_args cause it expect to have the first parameter (executable name) 
-    // The poco server omit it but argparse expect it.
-    std::vector<std::string> argvFix = { "WorkerNode" }; 
-    argvFix.insert(argvFix.end(), argv.begin(), argv.end());
-    argparse::ArgumentParser program("WorkerNode");
-
-    program.add_argument("master_ip")
-        .help("IP address of the MasterNode")
-        .default_value(std::string("127.0.0.1"));  // Default to localhost
-
-    program.add_argument("master_port")
-        .help("Port number of the MasterNode")
-        .default_value(8000)
-        .scan<'i', int>();
-
-    try {
-        // Pass argv, but skip argv[0] (executable name)
-        program.parse_args(std::vector<std::string>(argvFix.begin(), argvFix.end()));
-
-        std::string masterIP = program.get<std::string>("master_ip");
-        unsigned short masterPort = static_cast<unsigned short>(program.get<int>("master_port"));
-
-        std::cout << "WorkerNode started with Master IP: " << masterIP
-            << " and Port: " << masterPort << std::endl;
-
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Error parsing arguments: " << e.what() << std::endl;
-        return 1;  // Exit with error
+        res.result(http::status::ok);
+        res.set(http::field::content_type, "application/json");
+        res.body() = json_response.dump();
+        res.prepare_payload();
+        return res;
     }
 
-    std::string masterIP = program.get<std::string>("master_ip");
-    unsigned short masterPort = static_cast<unsigned short>(program.get<int>("master_port"));
-
-    // Choose an available port
-    Poco::Net::ServerSocket svs(8000);
-    unsigned short workerPort = svs.address().port();
-    std::cout << "WorkerNode listening on port: " << workerPort << std::endl;
-
-    // Notify MasterNode
-    NotifyMaster(masterIP, masterPort, workerPort);
-
-    Poco::Net::HTTPServer server(new JSONRequestHandlerFactory(*this), svs, new Poco::Net::HTTPServerParams());
-    server.start();
-
-    waitForTerminationRequest();
-    server.stop();
-
-    return Application::EXIT_OK;
+    res.result(http::status::not_found);
+    res.body() = "Not found";
+    res.prepare_payload();
+    return res;
 }
 
 void WorkerCore::NotifyMaster(const std::string& masterIP, unsigned short masterPort, unsigned short workerPort)
 {
     try {
-        Poco::URI masterURI("http://" + masterIP + ":" + std::to_string(masterPort) + "/register_worker");
-        Poco::Net::HTTPClientSession session(masterURI.getHost(), masterURI.getPort());
-        Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_POST, masterURI.getPath(), Poco::Net::HTTPMessage::HTTP_1_1);
-        request.setContentType("application/json");
+        boost::asio::io_context ioc;
 
-        Poco::JSON::Object json;
-        json.set("ip", "worker_ip");  // You need to retrieve the actual IP of the worker
-        json.set("port", workerPort);
+        // Resolve the master IP and port
+        tcp::resolver resolver(ioc);
+        auto const results = resolver.resolve(masterIP, std::to_string(masterPort));
 
-        std::ostringstream jsonStream;
-        json.stringify(jsonStream);
-        std::string jsonString = jsonStream.str();
+        // Connect to the master
+        tcp::socket socket(ioc);
+        boost::asio::connect(socket, results.begin(), results.end());
 
-        request.setContentLength(jsonString.length());
-        std::ostream& os = session.sendRequest(request);
-        os << jsonString;
+        // Create JSON payload
+        nlohmann::json json_payload = {
+            { "ip", "worker_ip" },  // TODO: dynamically fetch worker IP
+            { "port", workerPort }
+        };
+        std::string body = json_payload.dump();
 
-        Poco::Net::HTTPResponse response;
-        std::istream& rs = session.receiveResponse(response);
-        std::cout << "MasterNode response: " << response.getStatus() << " " << response.getReason() << std::endl;
+        // Create HTTP POST request
+        http::request<http::string_body> req{ http::verb::post, "/register_worker", 11 };
+        req.set(http::field::host, masterIP);
+        req.set(http::field::content_type, "application/json");
+        req.content_length(body.size());
+        req.body() = body;
+
+        // Send request
+        http::write(socket, req);
+
+        // Receive response
+        boost::beast::flat_buffer buffer;
+        http::response<http::string_body> res;
+        http::read(socket, buffer, res);
+
+        std::cout << "MasterNode response: " << res.result_int() << " " << res.reason() << std::endl;
     }
-    catch (const Poco::Exception& ex) {
-        std::cerr << "Failed to notify MasterNode: " << ex.displayText() << std::endl;
+    catch (const std::exception& ex) {
+        std::cerr << "Failed to notify MasterNode: " << ex.what() << std::endl;
     }
 }
-

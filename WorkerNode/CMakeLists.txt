@@ -22,6 +22,20 @@ add_custom_command(TARGET WorkerNode POST_BUILD
         $<TARGET_FILE_DIR:WorkerNode>
 )
 
-target_include_directories(WorkerNode PUBLIC
-    include
+target_include_directories(WorkerNode 
+    PUBLIC
+        include
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/RestServer/include
 )
+
+target_include_directories(WorkerNode 
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/RestServer/include
+        Common
+        Boost::system
+        Boost::thread
+        Boost::regex
+        nlohmann_json::nlohmann_json
+)
+

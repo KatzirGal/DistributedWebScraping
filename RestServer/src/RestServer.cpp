@@ -1,9 +1,5 @@
 #include "RestServer.h"
 
-#include "rest_server.hpp"
-
-#include <iostream>
-
 class RestServer::Impl {
 public:
     Impl(RestServer& parent, net::io_context& ioc, unsigned short port)
@@ -53,7 +49,7 @@ private:
         }
 
         void do_write() {
-            http::response<http::string_body> res = m_parent.handle_request(m_req);
+            http::response<http::string_body> res = m_parent.HandleRequest(m_req);
 
             auto self = shared_from_this();
             http::async_write(m_socket, res, [self](beast::error_code ec, std::size_t) {
@@ -65,6 +61,11 @@ private:
 
 RestServer::RestServer(net::io_context& ioc, unsigned short port)
     : m_impl(std::make_unique<Impl>(*this, ioc, port)) {
+}
+
+RestServer::~RestServer()
+{
+
 }
 
 void RestServer::start() {

@@ -12,12 +12,12 @@ using tcp = net::ip::tcp;
 class RestServer {
 public:
     RestServer(net::io_context& ioc, unsigned short port);
-    virtual ~RestServer() = default;
+    virtual ~RestServer();
 
     void start();
 
 protected:
-    virtual http::response<http::string_body> handle_request(const http::request<http::string_body>& req) = 0;
+    virtual http::response<http::string_body> HandleRequest(const http::request<http::string_body>& req) = 0;
 
 private:
     class Impl;

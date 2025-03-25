@@ -4,6 +4,8 @@ project(RestServer)
 # Load source/header file list
 include(${CMAKE_CURRENT_SOURCE_DIR}/file_list.cmake)
 
+include(${CMAKE_SOURCE_DIR}/boost_config.cmake)
+
 add_library(RestServer STATIC
     ${SOURCE_FILES}
     ${HEADER_FILES}

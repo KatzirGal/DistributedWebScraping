@@ -1,27 +1,20 @@
 #pragma once
 
-#include <vector>
+#include "RestServer.h"
+
+#include <boost/beast/http.hpp>
 #include <string>
 
-#include "WebServiceBase.h"
-
-#include <Poco/URI.h>
-
-
-class WorkerCore : public WebServiceBase
+class WorkerCore : public RestServer
 {
 public:
-	WorkerCore();
-	~WorkerCore();
+    WorkerCore(net::io_context& ioc, unsigned short port);
+    ~WorkerCore();
 
-	virtual bool HandleRequest(const Poco::URI& uri, const Poco::URI::QueryParameters& queryParameters, Poco::Net::HTTPServerResponse& response, std::ostream& out) override;
-
-protected:
-	int main(const std::vector<std::string>& argv) override;
-
-private:
-	void NotifyMaster(const std::string& masterIP, unsigned short masterPort, unsigned short workerPort);
+    // Overrides RestServer's virtual handler
+    virtual boost::beast::http::response<boost::beast::http::string_body>
+        HandleRequest(const boost::beast::http::request<boost::beast::http::string_body>& req) override;
 
 private:
-
+    void NotifyMaster(const std::string& masterIP, unsigned short masterPort, unsigned short workerPort);
 };

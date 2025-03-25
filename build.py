@@ -44,9 +44,20 @@ def main():
     else:
         print("Configuring CMake to use Boost and OpenSSL...")
     
-        # os.makedirs(os.path.join('Dependencies/argparse', cmake_build_folder), exist_ok=True)
         run_command(f'cmake -B {cmake_build_folder}  -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE={args.config}', cwd='Dependencies/argparse')
         run_command(f'cmake --build {cmake_build_folder} --config {args.config}', cwd='Dependencies/argparse')
+        
+        run_command(
+            f'cmake -B {cmake_build_folder} -G "Visual Studio 17 2022" -A x64 '
+            f'-DCMAKE_BUILD_TYPE={args.config}',
+            cwd='Dependencies/nlohmann_json'
+        )
+
+        run_command(
+            f'cmake --build {cmake_build_folder} --config {args.config}',
+            cwd='Dependencies/nlohmann_json'
+        )
+
 
         boost_install_dir = os.path.abspath(f'Dependencies/boost/CMAKE_BUILD/install/{args.config}')
         boost_cmake_dir = os.path.join(boost_install_dir, "lib", "cmake", "Boost-1.83.0")

@@ -3,5 +3,6 @@
 int main(int argc, char* argv[])
 {
     WorkerCore workerCore;
-    return workerCore.run(argc, argv);
+    return 0;
+    //return workerCore.run(argc, argv);
 }

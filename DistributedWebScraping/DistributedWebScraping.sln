@@ -15,9 +15,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorkerCore", "..\CMAKE_BUIL
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorkerNode", "..\CMAKE_BUILD\WorkerNode\WorkerNode.vcxproj", "{79C66991-4824-356C-99C0-B024F12C2126}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WebService", "..\CMAKE_BUILD\WebService\WebService.vcxproj", "{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Boost", "..\Dependencies\boost\CMAKE_BUILD\Boost.vcxproj", "{85704C54-CF84-35D4-9A8C-D663DE0F8375}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RestServer", "..\CMAKE_BUILD\RestServer\RestServer.vcxproj", "{8798B1EF-9AC3-3769-B0A5-582058E8CCE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,14 +75,6 @@ Global
 		{79C66991-4824-356C-99C0-B024F12C2126}.Release|x64.Build.0 = Release|x64
 		{79C66991-4824-356C-99C0-B024F12C2126}.Release|x86.ActiveCfg = Release|x64
 		{79C66991-4824-356C-99C0-B024F12C2126}.Release|x86.Build.0 = Release|x64
-		{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}.Debug|x64.ActiveCfg = Debug|x64
-		{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}.Debug|x64.Build.0 = Debug|x64
-		{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}.Debug|x86.ActiveCfg = Debug|x64
-		{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}.Debug|x86.Build.0 = Debug|x64
-		{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}.Release|x64.ActiveCfg = Release|x64
-		{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}.Release|x64.Build.0 = Release|x64
-		{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}.Release|x86.ActiveCfg = Release|x64
-		{5A7823D1-2584-34AB-B7D1-3187D0B0A8DF}.Release|x86.Build.0 = Release|x64
 		{85704C54-CF84-35D4-9A8C-D663DE0F8375}.Debug|x64.ActiveCfg = Debug|x64
 		{85704C54-CF84-35D4-9A8C-D663DE0F8375}.Debug|x64.Build.0 = Debug|x64
 		{85704C54-CF84-35D4-9A8C-D663DE0F8375}.Debug|x86.ActiveCfg = Debug|x64
@@ -91,8 +83,19 @@ Global
 		{85704C54-CF84-35D4-9A8C-D663DE0F8375}.Release|x64.Build.0 = Release|x64
 		{85704C54-CF84-35D4-9A8C-D663DE0F8375}.Release|x86.ActiveCfg = Release|x64
 		{85704C54-CF84-35D4-9A8C-D663DE0F8375}.Release|x86.Build.0 = Release|x64
+		{8798B1EF-9AC3-3769-B0A5-582058E8CCE3}.Debug|x64.ActiveCfg = Debug|x64
+		{8798B1EF-9AC3-3769-B0A5-582058E8CCE3}.Debug|x64.Build.0 = Debug|x64
+		{8798B1EF-9AC3-3769-B0A5-582058E8CCE3}.Debug|x86.ActiveCfg = Debug|x64
+		{8798B1EF-9AC3-3769-B0A5-582058E8CCE3}.Debug|x86.Build.0 = Debug|x64
+		{8798B1EF-9AC3-3769-B0A5-582058E8CCE3}.Release|x64.ActiveCfg = Release|x64
+		{8798B1EF-9AC3-3769-B0A5-582058E8CCE3}.Release|x64.Build.0 = Release|x64
+		{8798B1EF-9AC3-3769-B0A5-582058E8CCE3}.Release|x86.ActiveCfg = Release|x64
+		{8798B1EF-9AC3-3769-B0A5-582058E8CCE3}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A4F865C9-B8EC-4496-903B-43F52E39F022}
 	EndGlobalSection
 EndGlobal
